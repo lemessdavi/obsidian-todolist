@@ -12,17 +12,23 @@ export const parseMarkdown = (markdownContent: string): TodoItem[] => {
   const todos: TodoItem[] = [];
 
   tokens.forEach((token) => {
-    if (token.type === 'inline' && token.children) {
-      token.children.forEach((child, index) => {
-        if (child.type === 'checkbox_open') {
-          const nextChild = token.children![index + 1] ;
-          if (nextChild && nextChild.type === 'text') {
-            const todoText = nextChild.content;
-            const isChecked = child.markup === '[x]';
-            todos.push({ text: todoText, completed: isChecked });
-          }
+    if (token.type === 'list_item_open') {
+      const inlineToken = tokens[tokens.indexOf(token) + 2]; // Skipping 'paragraph_open' and accessing 'inline'
+
+      if (inlineToken && inlineToken.type === 'inline') {
+        const content = inlineToken.content.trim();
+
+        // Regular expression to match [x] or [ ] at the beginning
+        const todoRegex = /^\[(x| )\]\s+(.*)/i;
+        const match = content.match(todoRegex);
+
+        if (match) {
+          const isChecked = match[1].toLowerCase() === 'x';
+          const todoText = match[2].trim();
+
+          todos.push({ text: todoText, completed: isChecked });
         }
-      });
+      }
     }
   });
 
