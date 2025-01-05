@@ -13,13 +13,20 @@ export const readMarkdownFile = async (fileUri: string): Promise<string> => {
 };
 
 export const writeMarkdownFile = async (fileUri: string, content: string): Promise<boolean> => {
-  try {
-    await FileSystem.writeAsStringAsync(fileUri, content, {
-      encoding: FileSystem.EncodingType.UTF8,
-    });
-    return true;
-  } catch (error) {
-    console.error('Error writing file:', error);
-    throw error;
-  }
-};
+    try {
+      await FileSystem.writeAsStringAsync(fileUri, content, {
+        encoding: FileSystem.EncodingType.UTF8,
+      });
+  
+      // Debug
+      const newContent = await FileSystem.readAsStringAsync(fileUri, {
+        encoding: FileSystem.EncodingType.UTF8,
+      });
+      console.log('New file content:', newContent);
+  
+      return true;
+    } catch (error) {
+      console.error('Error writing file:', error);
+      throw error;
+    }
+  };
